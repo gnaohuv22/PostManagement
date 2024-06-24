@@ -1,0 +1,101 @@
+﻿@page
+@model WebApplication1.Pages.Post.IndexModel
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<form onsubmit="searchPosts(event)" class="form-inline mb-4">
+    <div class="form-group mr-2">
+        <label for="postId" class="sr-only">Post ID:</label>
+        <input type="text" class="form-control" id="postId" name="postId" placeholder="Post ID" />
+    </div>
+    <div class="form-group mr-2">
+        <label for="title" class="sr-only">Title:</label>
+        <input type="text" class="form-control" id="title" name="title" placeholder="Title" />
+    </div>
+    <div class="form-group mr-2">
+        <label for="content" class="sr-only">Content:</label>
+        <input type="text" class="form-control" id="content" name="content" placeholder="Content" />
+    </div>
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Posts[0].Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Posts[0].Content)
+            </th>
+            <th>
+                Category
+            </th>
+            <th>
+                Author
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Posts[0].PublishStatus)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id="postContainer">
+        
+
+    </tbody>
+</table>
+
+<script>
+    let searchParams = null;
+
+    async function searchPosts(event) {
+        event.preventDefault();
+
+        const formData = new FormData(event.target);
+        searchParams = new URLSearchParams(formData).toString();
+        fetchAndUpdatePosts(searchParams);
+    }
+
+    async function fetchAndUpdatePosts(searchParams) {
+        const response = await fetch(`?handler=GetPosts&${searchParams}`);
+
+        if (response.ok) {
+            const posts = await response.json();
+            console.log(posts);
+            updatePostsUI(posts);
+        } else {
+            console.error('Failed to fetch posts');
+        }
+    }
+
+    function updatePostsUI(posts) {
+        let tbody = document.querySelector("tbody");
+        tbody.innerHTML = "";
+
+        posts.forEach(item => {
+            let html = `<tr>
+                            <td>${item.Title}</td>
+                            <td>${item.Content}</td>
+                            <td>${item.CategoryName}</td>
+                            <td>${item.AuthorEmail}</td>
+                            <td>${item.PublishStatus ? 'Published' : 'Not published'}</td>
+                            <td>
+                                <a href='/Post/Edit?id=${item.PostId}'>Edit</a> |
+                                <a href='/Post/Detail?id=${item.PostId}'>Detail</a> |
+                                <a href='/Post/Delete?id=${item.PostId}'>Delete</a>
+                            </td>
+                        </tr>`;
+            tbody.innerHTML += html;
+        })
+    }
+</script>
+

@@ -1,0 +1,79 @@
+﻿@page
+@model WebApplication1.Pages.Post.ReportModel
+@{
+    ViewData["Title"] = "Report";
+}
+
+<h1>Report</h1>
+
+@if (Model.StartDate > Model.EndDate)
+{
+    <div class="alert alert-warning" role="alert">
+        Start date cannot be greater than end date.
+    </div>
+}
+<form method="get" class="form-inline mb-4">
+    <div class="form-group mr-2">
+        <label for="startDate" class="sr-only">Start Date:</label>
+        <input type="date" class="form-control" id="startDate" name="startDate" value="@Model.StartDate.ToString("yyyy-MM-dd")" />
+    </div>
+    <div class="form-group mr-2">
+        <label for="endDate" class="sr-only">End Date:</label>
+        <input type="date" class="form-control" id="endDate" name="endDate" value="@Model.EndDate.ToString("yyyy-MM-dd")" />
+    </div>
+    <button type="submit" class="btn btn-primary">Create Report</button>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Posts[0].Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Posts[0].Content)
+            </th>
+            <th>
+                Category
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Posts[0].CreatedDate)
+            </th>
+            <th>
+                Author
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Posts[0].PublishStatus)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var post in Model.Posts)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => post.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => post.Content)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => post.CategoryName)
+                </td>
+                <td>
+                    @post.CreatedDate.ToString("yyyy-MM-dd HH:mm")
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => post.AuthorEmail)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => post.PublishStatus)
+                </td>
+                <td>
+                    <a asp-page="Details" asp-route-id="@post.PostId">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
